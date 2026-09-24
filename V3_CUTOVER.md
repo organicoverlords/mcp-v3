@@ -10,15 +10,9 @@
 - artifact handoff attached to process results
 - transport/runtime diagnostics
 
-## V3 stack owns
+## V3 Rust integration
 
-- Busy/exact-scope collision coordination
-- queueing and scheduling
-- resource admission
-- deployment and topology convergence
-- recovery orchestration
-- bootstrap/orientation
-- project routing and cross-repo coordination
+V3 Rust calls MCP process tools from the feature that needs execution. Feature-local workflow logic remains feature-local. MCP does not introduce a generic Busy coordinator, scheduler, routing registry, resource-admission service, or recovery framework.
 
 ## Vault/Memory owns
 

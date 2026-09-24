@@ -6,5 +6,6 @@
     "kill_process"
   ],
   "history_owner": "vault-memory",
-  "consumer": "v3-stack"
+  "consumer": "v3-rust",
+  "workflow_owner": "v3-rust feature-local workflows"
 }
