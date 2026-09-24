@@ -1,0 +1,40 @@
+{
+	servers {
+		timeouts {
+			# Preserve normal HTTP keep-alive reuse; the prior 15s emergency reap forced client churn.
+			idle 5m
+		}
+	}
+}
+
+5-61-91-127.sslip.io {
+	handle /edge-status {
+		root * /var/lib/mcp-edge
+		rewrite * /status.json
+		header Content-Type application/json
+		header Cache-Control "no-store"
+		file_server
+	}
+
+	handle_path /artifact/* {
+		root * /srv/mcp-artifacts
+		header X-Robots-Tag "noindex, nofollow"
+		header Cache-Control "private, max-age=300"
+		file_server
+	}
+
+	handle {
+		reverse_proxy 10.203.0.2:3011 {
+			header_up -Tailscale-User-Login
+			header_up -Tailscale-Funnel-Request
+			transport http {
+				keepalive 30s
+				keepalive_idle_conns_per_host 4
+			}
+		}
+	}
+
+	log {
+		output file /var/log/caddy/mcp-edge-access.log
+	}
+}

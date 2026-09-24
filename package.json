@@ -1,0 +1,30 @@
+{
+  "name": "chatgpt-mcp-v3",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "prebuild": "node scripts/verify-dependency-contract.mjs",
+    "build": "tsc",
+    "test:snapshots": "tsc && node scripts/test-bootstrap-snapshot.mjs",
+    "pretest": "node scripts/verify-dependency-contract.mjs",
+    "test": "tsc && node scripts/verify-process-contract.mjs && node scripts/test-bootstrap-snapshot.mjs && node scripts/test-transport-payload-privacy.mjs && node scripts/test-bounded-jsonl.mjs && node scripts/test-inline-artifact-handoff.mjs && node scripts/test-start-read-revision.mjs && node scripts/test-structured-process-dedupe.mjs && node scripts/test-structured-runtime-repair.mjs && node scripts/test-adaptive-read.mjs && node scripts/test-receipt-archive.mjs && node scripts/test-audit-process-evidence.mjs && node scripts/test-lossless-output-paging.mjs && node scripts/test-read-window.mjs && node scripts/test-event-loop-io-isolation.mjs && node scripts/test-stall-watchdog.mjs && node scripts/test-worker-construction-isolation.mjs && node scripts/test-process-child-environment.mjs && node scripts/test-spawn-isolation.mjs",
+    "start": "node dist/index.js",
+    "test:native-omen-linux": "tsc && node scripts/test-native-omen-linux.mjs",
+    "test:native-omen-mcp": "tsc && node scripts/test-native-omen-linux.mjs && node scripts/test-native-omen-mcp-proxy.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "cross-spawn": "7.0.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/cross-spawn": "6.0.6",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.2.0",
+    "typescript": "^7.0.2"
+  }
+}

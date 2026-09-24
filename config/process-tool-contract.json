@@ -1,0 +1,1396 @@
+[
+  {
+    "name": "kill_process",
+    "description": "Terminate a process and its child process tree.",
+    "inputSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "process_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "process_id"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "caller_id": {
+          "type": "string"
+        },
+        "serving_identity": {
+          "type": "object",
+          "properties": {
+            "tool_contract_version": {
+              "type": "string",
+              "const": "process-tools.v4"
+            },
+            "backend_generation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_commit": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$"
+            }
+          },
+          "required": [
+            "tool_contract_version"
+          ],
+          "additionalProperties": false
+        },
+        "execution_serving_identity": {
+          "type": "object",
+          "properties": {
+            "tool_contract_version": {
+              "type": "string",
+              "const": "process-tools.v4"
+            },
+            "backend_generation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_commit": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$"
+            }
+          },
+          "required": [
+            "tool_contract_version"
+          ],
+          "additionalProperties": false
+        },
+        "execution_target": {
+          "type": "string",
+          "enum": [
+            "local",
+            "omen"
+          ]
+        },
+        "execution_transport": {
+          "type": "string",
+          "enum": [
+            "native-mcp",
+            "ssh-adapter"
+          ]
+        },
+        "process_id": {
+          "type": "string"
+        },
+        "pid": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "killed": {
+          "type": "boolean"
+        },
+        "already_exited": {
+          "type": "boolean",
+          "const": true
+        },
+        "exit_code": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kill_requested": {
+          "type": "boolean",
+          "const": true
+        },
+        "running": {
+          "type": "boolean"
+        },
+        "kill_timed_out": {
+          "type": "boolean",
+          "const": true
+        },
+        "error": {
+          "type": "string"
+        },
+        "signal": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "caller_id",
+        "serving_identity",
+        "process_id",
+        "pid",
+        "killed"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "read_output",
+    "description": "Read bounded stdout/stderr from an existing process or supported snapshot alias.",
+    "inputSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "process_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "max_chars": {
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "wait_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 240000
+        }
+      },
+      "required": [
+        "process_id"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "caller_id": {
+          "type": "string"
+        },
+        "serving_identity": {
+          "type": "object",
+          "properties": {
+            "tool_contract_version": {
+              "type": "string",
+              "const": "process-tools.v4"
+            },
+            "backend_generation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_commit": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$"
+            }
+          },
+          "required": [
+            "tool_contract_version"
+          ],
+          "additionalProperties": false
+        },
+        "execution_serving_identity": {
+          "type": "object",
+          "properties": {
+            "tool_contract_version": {
+              "type": "string",
+              "const": "process-tools.v4"
+            },
+            "backend_generation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_commit": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$"
+            }
+          },
+          "required": [
+            "tool_contract_version"
+          ],
+          "additionalProperties": false
+        },
+        "mcp_status": {
+          "type": "string",
+          "enum": [
+            "OK",
+            "STALE"
+          ]
+        },
+        "process_state": {
+          "type": "string",
+          "enum": [
+            "RUNNING",
+            "COMPLETED",
+            "SNAPSHOT"
+          ]
+        },
+        "elapsed_ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "next_action": {
+          "type": "string",
+          "enum": [
+            "READ_SAME_PROCESS_ID",
+            "STOP_READING"
+          ]
+        },
+        "process_id": {
+          "type": "string"
+        },
+        "pid": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "cwd": {
+          "type": "string"
+        },
+        "running": {
+          "type": "boolean"
+        },
+        "launching": {
+          "type": "boolean",
+          "const": true
+        },
+        "activity_target": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "card",
+                "node",
+                "project"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9._/:_-]+$"
+            },
+            "project": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "^[A-Za-z0-9._/:_-]+$"
+            }
+          },
+          "required": [
+            "type",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        "action_class": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9._/:_-]+$"
+        },
+        "execution_target": {
+          "type": "string",
+          "enum": [
+            "local",
+            "omen"
+          ]
+        },
+        "execution_transport": {
+          "type": "string",
+          "enum": [
+            "native-mcp",
+            "ssh-adapter"
+          ]
+        },
+        "execution_mode": {
+          "type": "string",
+          "enum": [
+            "powershell",
+            "native",
+            "explicit_shell",
+            "native_sequence",
+            "native_pipeline"
+          ]
+        },
+        "execution_reason": {
+          "type": "string"
+        },
+        "repair_attempts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "reason": {
+                "type": "string"
+              },
+              "command": {
+                "type": "string"
+              },
+              "stdout": {
+                "type": "string"
+              },
+              "stderr": {
+                "type": "string"
+              },
+              "exit_code": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "started_at": {
+                "type": "string"
+              },
+              "finished_at": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "reason",
+              "command",
+              "stdout",
+              "stderr",
+              "exit_code",
+              "started_at",
+              "finished_at"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "command": {
+          "type": "string"
+        },
+        "command_truncated": {
+          "type": "boolean",
+          "const": true
+        },
+        "submitted_command": {
+          "type": "string"
+        },
+        "submitted_command_truncated": {
+          "type": "boolean",
+          "const": true
+        },
+        "stdout": {
+          "type": "string"
+        },
+        "stderr": {
+          "type": "string"
+        },
+        "no_change": {
+          "type": "boolean",
+          "const": true
+        },
+        "exit_code": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "signal": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "started_at": {
+          "type": "string"
+        },
+        "finished_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "type": "string"
+        },
+        "error_code": {
+          "type": "string",
+          "maxLength": 80,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,79}$"
+        },
+        "stdout_truncated": {
+          "type": "boolean",
+          "const": true
+        },
+        "stderr_truncated": {
+          "type": "boolean",
+          "const": true
+        },
+        "stdout_dropped_from_start": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "stderr_dropped_from_start": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "request_id": {
+          "type": "string"
+        },
+        "audit_schema": {
+          "type": "string",
+          "const": "process-output-evidence.v1"
+        },
+        "retained_stdout_chars": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "retained_stderr_chars": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "retained_output_chars": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "retained_stdout_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "retained_stderr_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "retained_output_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "stdout_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "stderr_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "evidence_completeness": {
+          "type": "string",
+          "enum": [
+            "complete",
+            "bounded"
+          ]
+        },
+        "execution_outcome": {
+          "type": "string",
+          "enum": [
+            "success",
+            "nonzero_exit",
+            "signaled",
+            "error",
+            "unknown"
+          ]
+        },
+        "failure_diagnostic": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "parser_error",
+                "cli_usage",
+                "spawn_error"
+              ]
+            },
+            "origin": {
+              "type": "string",
+              "enum": [
+                "powershell",
+                "python",
+                "node",
+                "bash",
+                "busy_cli",
+                "stack_atlas_cli",
+                "swarm_route_cli",
+                "process"
+              ]
+            },
+            "boundary": {
+              "type": "string",
+              "enum": [
+                "source",
+                "legacy_command",
+                "argv_contract",
+                "spawn"
+              ]
+            },
+            "code": {
+              "type": "string",
+              "maxLength": 80,
+              "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,79}$"
+            },
+            "retry_without_change": {
+              "type": "boolean",
+              "const": false
+            },
+            "retry_requires_change": {
+              "type": "boolean",
+              "const": true
+            },
+            "suggested_action": {
+              "type": "string",
+              "enum": [
+                "fix_source",
+                "use_structured_python_script",
+                "use_structured_executable_args",
+                "fix_argv_contract",
+                "fix_executable_or_path",
+                "inspect_process_error"
+              ]
+            },
+            "input_target": {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "script",
+                    "executable"
+                  ]
+                },
+                "language": {
+                  "type": "string",
+                  "enum": [
+                    "powershell",
+                    "python",
+                    "node",
+                    "bash"
+                  ]
+                }
+              },
+              "required": [
+                "mode"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "kind",
+            "origin",
+            "boundary",
+            "retry_without_change",
+            "retry_requires_change",
+            "suggested_action"
+          ],
+          "additionalProperties": false
+        },
+        "output_page": {
+          "type": "object",
+          "properties": {
+            "stdout_start": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "stdout_end": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "stdout_total": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "stderr_start": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "stderr_end": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "stderr_total": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "page_chars": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "page_limit": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "more": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "stdout_start",
+            "stdout_end",
+            "stdout_total",
+            "stderr_start",
+            "stderr_end",
+            "stderr_total",
+            "page_chars",
+            "page_limit",
+            "more"
+          ],
+          "additionalProperties": false
+        },
+        "generated_at": {
+          "type": "string"
+        },
+        "freshness": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "FRESH",
+                "STALE"
+              ]
+            },
+            "as_of": {
+              "type": "string"
+            },
+            "age_seconds": {
+              "type": "number",
+              "minimum": 0
+            },
+            "stale_after_seconds": {
+              "type": "number",
+              "minimum": 0
+            },
+            "read_mode": {
+              "type": "string",
+              "const": "MATERIALIZED_ONLY"
+            }
+          },
+          "required": [
+            "status",
+            "as_of",
+            "age_seconds",
+            "stale_after_seconds",
+            "read_mode"
+          ],
+          "additionalProperties": false
+        },
+        "snapshot_alias": {
+          "type": "boolean",
+          "const": true
+        },
+        "bootstrap_alias": {
+          "type": "boolean",
+          "const": true
+        }
+      },
+      "required": [
+        "caller_id",
+        "serving_identity",
+        "mcp_status",
+        "process_state",
+        "elapsed_ms",
+        "next_action",
+        "process_id",
+        "running"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "start_process",
+    "description": "Execute a process locally or on the configured OMEN target and return structured process output.",
+    "inputSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "executable": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Program name or absolute executable path; paired with args and optional stdin; no shell re-parsing."
+        },
+        "args": {
+          "maxItems": 512,
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Argument vector passed directly to executable without shell re-parsing."
+        },
+        "stdin": {
+          "type": "string",
+          "maxLength": 1000000,
+          "description": "Optional standard input passed directly to executable."
+        },
+        "env": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+          },
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 65536
+          },
+          "description": "Child-process environment overrides for executable or script input."
+        },
+        "script": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000000,
+          "description": "Multiline source text for the selected runtime; transported through stdin."
+        },
+        "language": {
+          "type": "string",
+          "enum": [
+            "powershell",
+            "python",
+            "node",
+            "bash"
+          ],
+          "description": "Runtime for script."
+        },
+        "working_directory": {
+          "type": "string",
+          "description": "Working directory on the selected execution target."
+        },
+        "execution_target": {
+          "type": "string",
+          "enum": [
+            "local",
+            "omen"
+          ],
+          "description": "Execution target; local by default, or OMEN. On a native OMEN MCP host, OMEN executes locally without SSH."
+        },
+        "wait_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 240000
+        },
+        "activity_target": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "card",
+                "node",
+                "project"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9._/:_-]+$"
+            },
+            "project": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "^[A-Za-z0-9._/:_-]+$"
+            }
+          },
+          "required": [
+            "type",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        "action_class": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9._/:_-]+$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "caller_id": {
+          "type": "string"
+        },
+        "serving_identity": {
+          "type": "object",
+          "properties": {
+            "tool_contract_version": {
+              "type": "string",
+              "const": "process-tools.v4"
+            },
+            "backend_generation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_commit": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$"
+            }
+          },
+          "required": [
+            "tool_contract_version"
+          ],
+          "additionalProperties": false
+        },
+        "execution_serving_identity": {
+          "type": "object",
+          "properties": {
+            "tool_contract_version": {
+              "type": "string",
+              "const": "process-tools.v4"
+            },
+            "backend_generation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_commit": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$"
+            }
+          },
+          "required": [
+            "tool_contract_version"
+          ],
+          "additionalProperties": false
+        },
+        "mcp_status": {
+          "type": "string",
+          "enum": [
+            "OK",
+            "STALE"
+          ]
+        },
+        "process_state": {
+          "type": "string",
+          "enum": [
+            "RUNNING",
+            "COMPLETED",
+            "SNAPSHOT"
+          ]
+        },
+        "elapsed_ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "next_action": {
+          "type": "string",
+          "enum": [
+            "READ_SAME_PROCESS_ID",
+            "STOP_READING"
+          ]
+        },
+        "process_id": {
+          "type": "string"
+        },
+        "pid": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "cwd": {
+          "type": "string"
+        },
+        "running": {
+          "type": "boolean"
+        },
+        "launching": {
+          "type": "boolean",
+          "const": true
+        },
+        "activity_target": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "card",
+                "node",
+                "project"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9._/:_-]+$"
+            },
+            "project": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "^[A-Za-z0-9._/:_-]+$"
+            }
+          },
+          "required": [
+            "type",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        "action_class": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9._/:_-]+$"
+        },
+        "execution_target": {
+          "type": "string",
+          "enum": [
+            "local",
+            "omen"
+          ]
+        },
+        "execution_transport": {
+          "type": "string",
+          "enum": [
+            "native-mcp",
+            "ssh-adapter"
+          ]
+        },
+        "execution_mode": {
+          "type": "string",
+          "enum": [
+            "powershell",
+            "native",
+            "explicit_shell",
+            "native_sequence",
+            "native_pipeline"
+          ]
+        },
+        "execution_reason": {
+          "type": "string"
+        },
+        "repair_attempts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "reason": {
+                "type": "string"
+              },
+              "command": {
+                "type": "string"
+              },
+              "stdout": {
+                "type": "string"
+              },
+              "stderr": {
+                "type": "string"
+              },
+              "exit_code": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "started_at": {
+                "type": "string"
+              },
+              "finished_at": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "reason",
+              "command",
+              "stdout",
+              "stderr",
+              "exit_code",
+              "started_at",
+              "finished_at"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "command": {
+          "type": "string"
+        },
+        "command_truncated": {
+          "type": "boolean",
+          "const": true
+        },
+        "submitted_command": {
+          "type": "string"
+        },
+        "submitted_command_truncated": {
+          "type": "boolean",
+          "const": true
+        },
+        "stdout": {
+          "type": "string"
+        },
+        "stderr": {
+          "type": "string"
+        },
+        "no_change": {
+          "type": "boolean",
+          "const": true
+        },
+        "exit_code": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "signal": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "started_at": {
+          "type": "string"
+        },
+        "finished_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "type": "string"
+        },
+        "error_code": {
+          "type": "string",
+          "maxLength": 80,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,79}$"
+        },
+        "stdout_truncated": {
+          "type": "boolean",
+          "const": true
+        },
+        "stderr_truncated": {
+          "type": "boolean",
+          "const": true
+        },
+        "stdout_dropped_from_start": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "stderr_dropped_from_start": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "request_id": {
+          "type": "string"
+        },
+        "audit_schema": {
+          "type": "string",
+          "const": "process-output-evidence.v1"
+        },
+        "retained_stdout_chars": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "retained_stderr_chars": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "retained_output_chars": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "retained_stdout_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "retained_stderr_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "retained_output_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "stdout_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "stderr_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "evidence_completeness": {
+          "type": "string",
+          "enum": [
+            "complete",
+            "bounded"
+          ]
+        },
+        "execution_outcome": {
+          "type": "string",
+          "enum": [
+            "success",
+            "nonzero_exit",
+            "signaled",
+            "error",
+            "unknown"
+          ]
+        },
+        "failure_diagnostic": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "parser_error",
+                "cli_usage",
+                "spawn_error"
+              ]
+            },
+            "origin": {
+              "type": "string",
+              "enum": [
+                "powershell",
+                "python",
+                "node",
+                "bash",
+                "busy_cli",
+                "stack_atlas_cli",
+                "swarm_route_cli",
+                "process"
+              ]
+            },
+            "boundary": {
+              "type": "string",
+              "enum": [
+                "source",
+                "legacy_command",
+                "argv_contract",
+                "spawn"
+              ]
+            },
+            "code": {
+              "type": "string",
+              "maxLength": 80,
+              "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,79}$"
+            },
+            "retry_without_change": {
+              "type": "boolean",
+              "const": false
+            },
+            "retry_requires_change": {
+              "type": "boolean",
+              "const": true
+            },
+            "suggested_action": {
+              "type": "string",
+              "enum": [
+                "fix_source",
+                "use_structured_python_script",
+                "use_structured_executable_args",
+                "fix_argv_contract",
+                "fix_executable_or_path",
+                "inspect_process_error"
+              ]
+            },
+            "input_target": {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "script",
+                    "executable"
+                  ]
+                },
+                "language": {
+                  "type": "string",
+                  "enum": [
+                    "powershell",
+                    "python",
+                    "node",
+                    "bash"
+                  ]
+                }
+              },
+              "required": [
+                "mode"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "kind",
+            "origin",
+            "boundary",
+            "retry_without_change",
+            "retry_requires_change",
+            "suggested_action"
+          ],
+          "additionalProperties": false
+        },
+        "output_page": {
+          "type": "object",
+          "properties": {
+            "stdout_start": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "stdout_end": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "stdout_total": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "stderr_start": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "stderr_end": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "stderr_total": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "page_chars": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "page_limit": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "more": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "stdout_start",
+            "stdout_end",
+            "stdout_total",
+            "stderr_start",
+            "stderr_end",
+            "stderr_total",
+            "page_chars",
+            "page_limit",
+            "more"
+          ],
+          "additionalProperties": false
+        },
+        "generated_at": {
+          "type": "string"
+        },
+        "freshness": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "FRESH",
+                "STALE"
+              ]
+            },
+            "as_of": {
+              "type": "string"
+            },
+            "age_seconds": {
+              "type": "number",
+              "minimum": 0
+            },
+            "stale_after_seconds": {
+              "type": "number",
+              "minimum": 0
+            },
+            "read_mode": {
+              "type": "string",
+              "const": "MATERIALIZED_ONLY"
+            }
+          },
+          "required": [
+            "status",
+            "as_of",
+            "age_seconds",
+            "stale_after_seconds",
+            "read_mode"
+          ],
+          "additionalProperties": false
+        },
+        "snapshot_alias": {
+          "type": "boolean",
+          "const": true
+        },
+        "bootstrap_alias": {
+          "type": "boolean",
+          "const": true
+        }
+      },
+      "required": [
+        "caller_id",
+        "serving_identity",
+        "mcp_status",
+        "process_state",
+        "elapsed_ms",
+        "next_action",
+        "process_id",
+        "running"
+      ],
+      "additionalProperties": false
+    }
+  }
+]
