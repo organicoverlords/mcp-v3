@@ -12,7 +12,8 @@
     "test": "tsc && node scripts/verify-process-contract.mjs && node scripts/test-bootstrap-snapshot.mjs && node scripts/test-transport-payload-privacy.mjs && node scripts/test-bounded-jsonl.mjs && node scripts/test-inline-artifact-handoff.mjs && node scripts/test-start-read-revision.mjs && node scripts/test-structured-process-dedupe.mjs && node scripts/test-structured-runtime-repair.mjs && node scripts/test-adaptive-read.mjs && node scripts/test-receipt-archive.mjs && node scripts/test-audit-process-evidence.mjs && node scripts/test-lossless-output-paging.mjs && node scripts/test-read-window.mjs && node scripts/test-event-loop-io-isolation.mjs && node scripts/test-stall-watchdog.mjs && node scripts/test-worker-construction-isolation.mjs && node scripts/test-process-child-environment.mjs && node scripts/test-spawn-isolation.mjs",
     "start": "node dist/index.js",
     "test:native-omen-linux": "tsc && node scripts/test-native-omen-linux.mjs",
-    "test:native-omen-mcp": "tsc && node scripts/test-native-omen-linux.mjs && node scripts/test-native-omen-mcp-proxy.mjs"
+    "test:native-omen-mcp": "tsc && node scripts/test-native-omen-linux.mjs && node scripts/test-native-omen-mcp-proxy.mjs",
+    "test:process-contract": "tsc && node scripts/verify-process-contract.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.30.0",

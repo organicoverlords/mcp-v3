@@ -7,7 +7,7 @@ import { z } from "zod";
 import { ProcessManager } from "./lib/process-manager.js";
 import { prepareMarkedArtifactHandoffs, registerArtifactFileResource } from "./lib/file-transfer.js";
 
-// V3 MCP is transport/process only. Workflow decisions remain feature-local in V3 Rust.
+// V3 MCP is transport/process only. Scheduling and coordination live in the V3 stack.
 const toolProfile = (process.env.MCP_TOOL_PROFILE || "process").trim().toLowerCase();
 if (toolProfile !== "process") throw new Error("MCP_TOOL_PROFILE must be process");
 const configuredMaxLiveProcessesRaw = process.env.MCP_MAX_LIVE_PROCESSES?.trim();
