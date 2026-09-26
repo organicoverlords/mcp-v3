@@ -3,11 +3,15 @@ name: Process Contract CI
 on:
   pull_request:
   push:
-    branches: [master]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   omen-contract:
@@ -23,4 +27,4 @@ jobs:
           python-version: '3.12'
       - run: npm ci --no-audit --no-fund
       - name: Verify three-tool and OMEN execution contract
-        run: npm run test:omen-contract
+        run: npm run test:process-contract

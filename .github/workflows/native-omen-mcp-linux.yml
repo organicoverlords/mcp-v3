@@ -3,7 +3,11 @@ name: Native OMEN MCP Linux CI
 on:
   pull_request:
   push:
-    branches: [master]
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   native-omen-linux:
