@@ -230,6 +230,8 @@ try {
   assert.match(invoked.stdout, /ARG=A B/);
   assert.equal(replayStructuredArgvTransportError(helper, ["line1\r\nline2"]), "windows_command_shim_multiline_argument_not_lossless");
   assert.equal(replayStructuredArgvTransportError("node.exe", ["line1\r\nline2"]), undefined);
+  assert.equal(replayStructuredArgvTransportError("Godot_v4.7.1-stable_win64.exe", ["--editor"]), "local_interactive_godot_disallowed_use_headless_or_omen");
+  assert.equal(replayStructuredArgvTransportError("Godot_v4.7.1-stable_win64.exe", ["--headless", "--editor"]), undefined);
   await assert.rejects(
     manager.startStructuredWithWait(helper, ["line1\r\necho SECOND_COMMAND_MUST_NOT_RUN"], cmdDir, "caller_execution_plan_cmd_multiline_guard", waitMs),
     /windows_command_shim_multiline_argument_not_lossless/,

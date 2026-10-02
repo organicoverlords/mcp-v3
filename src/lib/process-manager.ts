@@ -102,6 +102,12 @@ function structuredPolicyText(base: string, environment?: Record<string, string>
 }
 
 function structuredArgvTransportError(executable: string, args: string[]): string | undefined {
+  const godotBase = executable.split("/").at(-1)?.split(String.fromCharCode(92)).at(-1)?.toLowerCase() ?? executable.toLowerCase();
+  const godotExecutable = godotBase === "godot" || godotBase === "godot.exe" || (godotBase.startsWith("godot_v") && godotBase.endsWith(".exe"));
+  const godotHeadless = args.some((value) => value.toLowerCase() === "--headless");
+  if (process.platform === "win32" && godotExecutable && !godotHeadless) {
+    return "local_interactive_godot_disallowed_use_headless_or_omen";
+  }
   if (!args.some((value) => /[\r\n]/.test(value))) return undefined;
   const base = executable.replaceAll("/", "\\").split("\\").at(-1)?.toLowerCase() ?? executable.toLowerCase();
   const commandShim = /\.(?:cmd|bat)$/i.test(base) || ["npm", "npx", "pnpm", "yarn"].includes(base);
