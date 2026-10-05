@@ -6,7 +6,7 @@ Its public tool surface is exactly `start_process`, `read_output`, and `kill_pro
 
 MCP owns transport, process execution and receipts, bounded output paging, artifact handoff, execution-target delegation, and transport diagnostics.
 
-Recovery/update authority is RECOVERY.md. No other file in this repository is a recovery recipe. Workflow decisions remain inside the current feature that needs them in V3 Rust; MCP does not grow a generic scheduler, routing registry, recovery framework, or resource-admission service.
+Workflow decisions remain inside the current feature that needs them in V3 Rust; MCP does not grow a generic scheduler, routing registry, recovery framework, or resource-admission service.
 
 MCP does not own Lane Finals, Tiny3D, Vault/Memory, CI fleets, or proof/review policy.
 
